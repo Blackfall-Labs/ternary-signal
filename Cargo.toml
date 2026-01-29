@@ -1,0 +1,15 @@
+[package]
+name = "ternary-signal"
+version = "0.1.0"
+edition = "2021"
+description = "Signal type — the fundamental unit of ternary neural communication (polarity + magnitude, 2 bytes)"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/blackfall-labs/ternary-signal"
+keywords = ["ternary", "neural", "signal", "cognitive", "neuromorphic"]
+categories = ["science", "simulation"]
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"], optional = true }
+
+[features]
+default = ["serde"]
