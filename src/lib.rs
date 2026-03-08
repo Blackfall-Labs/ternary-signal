@@ -170,6 +170,9 @@ impl Signal {
         self.polarity as i32 * self.effective_magnitude() as i32
     }
 
+    /// Baseline multiplier constant — use when k=1 is intentional.
+    pub const BASELINE_MULTIPLIER: u8 = 1;
+
     // -- Constructors --------------------------------------------------------
 
     /// Create a zero / neutral signal
@@ -179,6 +182,7 @@ impl Signal {
     }
 
     /// Create a positive (excitatory) signal with multiplier = 1
+    #[deprecated(note = "use Signal::positive_amplified(mag, mul) — s = p × m × k requires all three values")]
     #[inline]
     pub const fn positive(magnitude: u8) -> Self {
         Self {
@@ -189,6 +193,7 @@ impl Signal {
     }
 
     /// Create a negative (inhibitory) signal with multiplier = 1
+    #[deprecated(note = "use Signal::negative_amplified(mag, mul) — s = p × m × k requires all three values")]
     #[inline]
     pub const fn negative(magnitude: u8) -> Self {
         Self {
@@ -219,6 +224,7 @@ impl Signal {
     }
 
     /// Create from [`Polarity`] enum and magnitude (type-safe, multiplier = 1)
+    #[deprecated(note = "use Signal::with_polarity_amplified(pol, mag, mul) — s = p × m × k requires all three values")]
     #[inline]
     pub const fn with_polarity(polarity: Polarity, magnitude: u8) -> Self {
         Self {
@@ -243,6 +249,7 @@ impl Signal {
     }
 
     /// Create from raw `i8` polarity and magnitude (**unchecked**, multiplier = 1)
+    #[deprecated(note = "use Signal::new_raw(pol, mag, mul) — s = p × m × k requires all three values")]
     #[inline]
     pub const fn new(polarity: i8, magnitude: u8) -> Self {
         Self {
@@ -263,6 +270,7 @@ impl Signal {
     }
 
     /// Create from raw `i8` polarity with validation (multiplier = 1)
+    #[deprecated(note = "use Signal::new_checked_full(pol, mag, mul) — s = p × m × k requires all three values")]
     #[inline]
     pub const fn new_checked(polarity: i8, magnitude: u8) -> Option<Self> {
         match Polarity::from_i8(polarity) {
@@ -275,10 +283,24 @@ impl Signal {
         }
     }
 
+    /// Create from raw `i8` polarity, magnitude, and multiplier with validation
+    #[inline]
+    pub const fn new_checked_full(polarity: i8, magnitude: u8, multiplier: u8) -> Option<Self> {
+        match Polarity::from_i8(polarity) {
+            Some(_) => Some(Self {
+                polarity,
+                magnitude,
+                multiplier,
+            }),
+            None => None,
+        }
+    }
+
     /// Create from separate float components (multiplier = 1)
     ///
     /// `polarity_f`: quantised to {-1, 0, +1} (dead-zone ±0.1)
     /// `magnitude_f`: clamped to 0.0–1.0, scaled to 0–255
+    #[deprecated(note = "defaults multiplier to 1 — construct with explicit multiplier instead")]
     #[inline]
     pub fn from_floats(polarity_f: f32, magnitude_f: f32) -> Self {
         let polarity = if polarity_f > 0.1 {
@@ -299,6 +321,7 @@ impl Signal {
     /// Create from a single signed float (-1.0 to 1.0), multiplier = 1
     ///
     /// Sign → polarity, absolute value → magnitude.
+    #[deprecated(note = "defaults multiplier to 1 — construct with explicit multiplier instead")]
     #[inline]
     pub fn from_signed(value: f32) -> Self {
         let polarity = if value > 0.01 {
@@ -322,6 +345,7 @@ impl Signal {
     ///
     /// **Warning**: This discards values above ±255. For the full ±65,025 range,
     /// use [`from_current`] instead.
+    #[deprecated(note = "defaults multiplier to 1 — use Signal::from_current(val) for full p × m × k range")]
     #[inline]
     pub fn from_signed_i32(value: i32) -> Self {
         if value == 0 {
@@ -384,6 +408,7 @@ impl Signal {
     }
 
     /// Create from a signed `i16` (multiplier = 1)
+    #[deprecated(note = "defaults multiplier to 1 — use Signal::from_signed_i32(val) for large ranges or construct with explicit multiplier")]
     #[inline]
     pub fn from_i16(value: i16) -> Self {
         if value == 0 {
@@ -405,6 +430,7 @@ impl Signal {
     }
 
     /// Create from u8 bipolar representation (128 = baseline)
+    #[deprecated(note = "defaults multiplier to 1 — construct Signal with explicit multiplier instead")]
     #[inline]
     pub fn from_u8_bipolar(level: u8) -> Self {
         let delta = level as i16 - 128;
@@ -412,6 +438,7 @@ impl Signal {
     }
 
     /// Create from spike rate (Hz)
+    #[deprecated(note = "defaults multiplier to 1 — construct Signal with explicit multiplier instead")]
     #[inline]
     pub fn from_spike_rate(rate_hz: f32, max_rate_hz: f32) -> Self {
         if rate_hz <= 0.0 || max_rate_hz <= 0.0 {
@@ -427,6 +454,7 @@ impl Signal {
     }
 
     /// Create from spike count in a time window
+    #[deprecated(note = "defaults multiplier to 1 — construct Signal with explicit multiplier instead")]
     #[inline]
     pub fn from_spike_count(count: u32, window_ms: f32, max_rate_hz: f32) -> Self {
         if count == 0 || window_ms <= 0.0 {

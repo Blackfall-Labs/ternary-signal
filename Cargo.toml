@@ -1,6 +1,6 @@
 [package]
 name = "ternary-signal"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 description = "Ternary signal types for neuromorphic systems — polarity x magnitude x multiplier, 3-byte and 1-byte packed formats"
 license = "MIT OR Apache-2.0"
