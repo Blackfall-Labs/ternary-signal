@@ -106,4 +106,4 @@ let back   = Signal::from(packed);             // exact from LUT values
 
 ## License
 
-MIT OR Apache-2.0
+MIT. See [LICENSE](LICENSE).
